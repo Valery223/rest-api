@@ -1,7 +1,10 @@
 package main
 
 import (
+	"learn/rest-api/internal/book/service"
+	"learn/rest-api/internal/book/transport"
 	parseconfig "learn/rest-api/internal/parse_config"
+	"learn/rest-api/internal/router"
 	"learn/rest-api/internal/storage/sqlite"
 	"log/slog"
 	"os"
@@ -29,6 +32,10 @@ func main() {
 	log.Info("get url", "url", url)
 
 	// TODO: init router:gin
+	bs := service.
+	router := router.NewRouter(transport.NewBookHandler())
+
+	router.Run(":8080")
 
 	// TODO: run server
 }
