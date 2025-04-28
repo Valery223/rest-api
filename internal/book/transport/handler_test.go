@@ -22,6 +22,11 @@ func (m *mockService) GetBook(input service.BookInputDTO) (service.BookOutputDTO
 	return service.BookOutputDTO{ID: input.ID, Name: "Test Book", Author: "Test Author"}, nil
 }
 
+// TODO доделать
+func (m *mockService) PostBook(service.CreateBookInputDTO) (service.CreateBookOutputDTO, error) {
+	return service.CreateBookOutputDTO{}, nil
+}
+
 var ErrNotFound = errors.New("book not found")
 
 func TestGetBookHandler(t *testing.T) {

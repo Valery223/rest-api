@@ -8,6 +8,7 @@ import (
 
 type Service interface {
 	GetBook(service.BookInputDTO) (service.BookOutputDTO, error)
+	PostBook(service.CreateBookInputDTO) (service.CreateBookOutputDTO, error)
 }
 
 type BookHandler struct {
@@ -31,7 +32,27 @@ func (h *BookHandler) GetBook(c *gin.Context) {
 		return
 	}
 
-	responseBook := BookResponceDTO{ID: book.ID, Name: book.Name, Author: book.Author}
+	responseBook := BookResponseDTO{ID: book.ID, Name: book.Name, Author: book.Author}
+
+	c.JSON(200, responseBook)
+}
+
+func (h *BookHandler) PostBook(c *gin.Context) {
+	var query CreateBookRequestDTO
+	if err := c.ShouldBindJSON(&query); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	input := service.CreateBookInputDTO{Name: query.Name, Author: query.Author}
+	sOut, err := h.service.PostBook(input)
+	if err != nil {
+		// FIX status code  & error(make castom)
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	responseBook := CreateBookResponseDTO{ID: sOut.ID}
 
 	c.JSON(200, responseBook)
 }

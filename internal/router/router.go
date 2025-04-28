@@ -18,6 +18,7 @@ func NewRouter(uH *userHandler.BookHandler) *gin.Engine {
 			users := v1.Group("/books")
 			{
 				users.GET("/:id", uH.GetBook)
+				users.POST("", uH.PostBook)
 			}
 
 		}
