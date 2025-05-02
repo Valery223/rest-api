@@ -1,8 +1,12 @@
 package main
 
 import (
+	"learn/rest-api/internal/book/repository"
+	"learn/rest-api/internal/book/service"
+	"learn/rest-api/internal/book/transport"
 	parseconfig "learn/rest-api/internal/parse_config"
-	"learn/rest-api/internal/storage/sqlite"
+	"learn/rest-api/internal/router"
+	"learn/rest-api/internal/storage"
 	"log/slog"
 	"os"
 )
@@ -13,24 +17,21 @@ func main() {
 	log := setupLogger(cfg.Env)
 	log.Info("Starting logger...", "env", cfg.Env)
 
-	// TODO init storage: sqlite
-	storage, err := sqlite.New(cfg.StoragePath)
+	db, err := storage.InitSQLiteDB(cfg.StoragePath)
 	if err != nil {
 		log.Error("Failed to initialize storage", "error", err)
 		os.Exit(1)
 	}
 
-	url, err := storage.GetURL("ex")
-	if err != nil {
-		log.Error("error for get url", "err", err)
-		return
-	}
+	// создаем репорзиторий, сервис, хендлер(3 слоя) и вносим в роутер этот хендлер
+	repo := repository.NewBookStorage(db)
 
-	log.Info("get url", "url", url)
+	cvs := service.NewBookService(repo)
 
-	// TODO: init router:gin
+	router := router.NewRouter(transport.NewBookHandler(cvs))
 
-	// TODO: run server
+	router.Run(cfg.Address)
+
 }
 
 const (
