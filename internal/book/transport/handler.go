@@ -1,14 +1,16 @@
 package transport
 
 import (
+	"errors"
 	"learn/rest-api/internal/book/service"
+	"learn/rest-api/internal/errdefs"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Service interface {
 	GetBook(service.BookInputDTO) (service.BookOutputDTO, error)
-	PostBook(service.CreateBookInputDTO) (service.CreateBookOutputDTO, error)
+	CreateBook(service.CreateBookInputDTO) (service.CreateBookOutputDTO, error)
 }
 
 type BookHandler struct {
@@ -28,8 +30,14 @@ func (h *BookHandler) GetBook(c *gin.Context) {
 	input := service.BookInputDTO{ID: query.ID}
 	book, err := h.service.GetBook(input)
 	if err != nil {
-		c.JSON(404, gin.H{"error": err.Error()})
+		if errors.Is(err, errdefs.ErrNotFound) {
+			c.JSON(404, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(500, gin.H{"error": err.Error()})
+
 		return
+
 	}
 
 	responseBook := BookResponseDTO{ID: book.ID, Name: book.Name, Author: book.Author}
@@ -45,9 +53,8 @@ func (h *BookHandler) PostBook(c *gin.Context) {
 	}
 
 	input := service.CreateBookInputDTO{Name: query.Name, Author: query.Author}
-	sOut, err := h.service.PostBook(input)
+	sOut, err := h.service.CreateBook(input)
 	if err != nil {
-		// FIX status code  & error(make castom)
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}

@@ -6,8 +6,8 @@ import (
 )
 
 type Storage interface {
-	GetBookById(id int) (repository.BookEntity, error)
-	SaveBook(repository.BookEntity) (int, error)
+	GetBookById(id int) (repository.BookModel, error)
+	SaveBook(repository.BookModel) (int, error)
 }
 
 type BookService struct {
@@ -20,21 +20,21 @@ func NewBookService(db Storage) *BookService {
 
 func (bs *BookService) GetBook(book BookInputDTO) (BookOutputDTO, error) {
 	var id int = book.ID
-	bookEntity, err := bs.db.GetBookById(id)
+	bookModel, err := bs.db.GetBookById(id)
 	if err != nil {
 		return BookOutputDTO{}, fmt.Errorf("error get book from repo: %w", err)
 	}
 
 	return BookOutputDTO{
-		ID:     bookEntity.ID,
-		Name:   bookEntity.Name,
-		Author: bookEntity.Author,
+		ID:     bookModel.ID,
+		Name:   bookModel.Name,
+		Author: bookModel.Author,
 	}, nil
 }
 
-func (bs *BookService) PostBook(book CreateBookInputDTO) (CreateBookOutputDTO, error) {
-	var bookEntity = repository.BookEntity{Name: book.Name, Author: book.Author}
-	id, err := bs.db.SaveBook(bookEntity)
+func (bs *BookService) CreateBook(book CreateBookInputDTO) (CreateBookOutputDTO, error) {
+	var bookModel = repository.BookModel{Name: book.Name, Author: book.Author}
+	id, err := bs.db.SaveBook(bookModel)
 	if err != nil {
 		return CreateBookOutputDTO{}, fmt.Errorf("error create book from repo: %w", err)
 	}

@@ -7,24 +7,24 @@ import (
 	"testing"
 )
 
-type mockStrorage struct{}
+type mockStorage struct{}
 
-func (m *mockStrorage) GetBookById(id int) (repository.BookEntity, error) {
+func (m *mockStorage) GetBookById(id int) (repository.BookModel, error) {
 	if id == 9 {
-		return repository.BookEntity{}, ErrNotFound
+		return repository.BookModel{}, ErrNotFound
 	}
-	return repository.BookEntity{ID: id, Name: "Test Book", Author: "Test Author"}, nil
+	return repository.BookModel{ID: id, Name: "Test Book", Author: "Test Author"}, nil
 }
 
 // TODO
-func (m *mockStrorage) SaveBook(repository.BookEntity) (int, error) {
+func (m *mockStorage) SaveBook(repository.BookModel) (int, error) {
 	return 0, nil
 }
 
 var ErrNotFound = errors.New("book not found")
 
 func TestGetBook_Success(t *testing.T) {
-	storage := &mockStrorage{}
+	storage := &mockStorage{}
 	svc := service.NewBookService(storage)
 
 	input := service.BookInputDTO{ID: 1}
@@ -39,7 +39,7 @@ func TestGetBook_Success(t *testing.T) {
 }
 
 func TestGetBook_NotFound(t *testing.T) {
-	storage := &mockStrorage{}
+	storage := &mockStorage{}
 	svc := service.NewBookService(storage)
 
 	input := service.BookInputDTO{ID: 9}

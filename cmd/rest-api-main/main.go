@@ -30,7 +30,7 @@ func main() {
 
 	router := router.NewRouter(transport.NewBookHandler(cvs))
 
-	router.Run(":8080")
+	router.Run(cfg.Address)
 
 }
 

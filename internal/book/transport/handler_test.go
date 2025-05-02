@@ -1,9 +1,9 @@
 package transport_test
 
 import (
-	"errors"
 	"learn/rest-api/internal/book/service"
 	"learn/rest-api/internal/book/transport"
+	"learn/rest-api/internal/errdefs"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -17,17 +17,15 @@ type mockService struct{}
 
 func (m *mockService) GetBook(input service.BookInputDTO) (service.BookOutputDTO, error) {
 	if input.ID == 9 {
-		return service.BookOutputDTO{}, ErrNotFound
+		return service.BookOutputDTO{}, errdefs.ErrNotFound
 	}
 	return service.BookOutputDTO{ID: input.ID, Name: "Test Book", Author: "Test Author"}, nil
 }
 
 // TODO доделать
-func (m *mockService) PostBook(service.CreateBookInputDTO) (service.CreateBookOutputDTO, error) {
+func (m *mockService) CreateBook(service.CreateBookInputDTO) (service.CreateBookOutputDTO, error) {
 	return service.CreateBookOutputDTO{}, nil
 }
-
-var ErrNotFound = errors.New("book not found")
 
 func TestGetBookHandler(t *testing.T) {
 	gin.SetMode(gin.TestMode)
@@ -57,7 +55,7 @@ func TestGetBookHandler(t *testing.T) {
 			name:         "not found id",
 			url:          "/books/9",
 			expectedCode: 404,
-			expectedBody: `{"error":"book not found"}`,
+			expectedBody: `{"error":"resource not found"}`,
 		},
 	}
 

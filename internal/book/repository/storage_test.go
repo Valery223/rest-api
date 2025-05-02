@@ -29,7 +29,7 @@ func TestSaveBookAndGetBookById(t *testing.T) {
 	db := setupTestDB(t)
 	storage := repository.NewBookStorage(db)
 
-	book := repository.BookEntity{
+	book := repository.BookModel{
 		Name:   "Test Book",
 		Author: "Test Author",
 	}
