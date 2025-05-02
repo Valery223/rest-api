@@ -1,12 +1,15 @@
 package main
 
 import (
-	"learn/rest-api/internal/book/repository"
-	"learn/rest-api/internal/book/service"
-	"learn/rest-api/internal/book/transport"
+	bookRepository "learn/rest-api/internal/book/repository"
+	bookService "learn/rest-api/internal/book/service"
+	bookTransport "learn/rest-api/internal/book/transport"
 	parseconfig "learn/rest-api/internal/parse_config"
 	"learn/rest-api/internal/router"
 	"learn/rest-api/internal/storage"
+	userRepository "learn/rest-api/internal/user/repository"
+	userService "learn/rest-api/internal/user/service"
+	userTransport "learn/rest-api/internal/user/transport"
 	"log/slog"
 	"os"
 )
@@ -24,11 +27,15 @@ func main() {
 	}
 
 	// создаем репорзиторий, сервис, хендлер(3 слоя) и вносим в роутер этот хендлер
-	repo := repository.NewBookStorage(db)
+	bRepo := bookRepository.NewBookStorage(db)
+	bCVS := bookService.NewBookService(bRepo)
+	bTRT := bookTransport.NewBookHandler(bCVS)
 
-	cvs := service.NewBookService(repo)
+	uRepo := userRepository.NewUserRepository(db)
+	uCVS := userService.NewUserService(uRepo)
+	uTRT := userTransport.NewUserHandler(uCVS)
 
-	router := router.NewRouter(transport.NewBookHandler(cvs))
+	router := router.NewRouter(bTRT, uTRT)
 
 	router.Run(cfg.Address)
 

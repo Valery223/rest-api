@@ -14,11 +14,17 @@ func InitSQLiteDB(dbPath string) (*sql.DB, error) {
 	}
 
 	createTableQuery := `
-    CREATE TABLE IF NOT EXISTS book (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        author TEXT NOT NULL
-    );`
+	CREATE TABLE IF NOT EXISTS book (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL,
+		author TEXT NOT NULL
+	);
+	CREATE TABLE IF NOT EXISTS user (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL,
+		email TEXT NOT NULL UNIQUE,
+		password TEXT NOT NULL
+	);`
 	_, err = db.Exec(createTableQuery)
 	if err != nil {
 		db.Close()
